@@ -36,12 +36,15 @@ else
                         <td><StatusLabel Status="@task.Status"></StatusLabel></td>
                         <td>
                             <a href="/taskEdit/@task.Id"><i class="fa-solid fa-pen-to-square"></i></a> |
-                            <a href="/taskDetails/@task.Id"><i class="fa fa-info-circle"></i></a>
+                            <a href="/taskDetails/@task.Id"><i class="fa fa-info-circle"></i></a> |
                             <a href="" @onclick:preventDefault @onclick="() => OnDeleteTask(task.Id)"><i class="fa-solid fa-trash"></i></a>
                         </td>
                     </tr>
                 }
             </tbody>
+            <tfoot>
+                <Pagination MetaData="MetaData" SelectedPage="SelectedPage" Spread="2"></Pagination>
+            </tfoot>
         </table>
     </div>
     <Confirmation ConfirmationChanged="OnConfirmDeleteTask" @ref="DeleteConfirmation"></Confirmation>

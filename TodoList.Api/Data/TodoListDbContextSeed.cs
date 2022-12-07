@@ -24,8 +24,11 @@ namespace TodoList.Api.Data
                     FirstName = "Tuong",
                     LastName = "Tran",
                     Email = "tuongtran1106@gmail.com",
+                    NormalizedEmail = "TUONGTRAN1106@GMAIL.COM",
                     PhoneNumber = "0797205689",
-                    UserName = "tuongtran1106"
+                    UserName = "tuongtran1106",
+                    NormalizedUserName = "TUONGTRAN1106",
+                    SecurityStamp = Guid.NewGuid().ToString()
                 };
                 user.PasswordHash = _passwordHasher.HashPassword(user, "Tuong1106!");
                 context.Users.Add(user);
