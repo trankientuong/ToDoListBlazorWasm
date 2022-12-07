@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using TodoList.Api.Data;
 using TodoList.Models;
 using TodoList.Models.Dtos;
+using TodoList.Models.SeedWork;
 
 namespace TodoList.Api.Repositories
 {
@@ -43,7 +44,7 @@ namespace TodoList.Api.Repositories
             return taskDetailsDto;
         }
 
-        public async Task<IEnumerable<TaskDto>> GetTasks(TaskListSearch taskListSearch)
+        public async Task<PagedList<TaskDto>> GetTasks(TaskListSearch taskListSearch)
         {
             var query = _context.Tasks.Include(a => a.Assignee).AsQueryable();
             if (!string.IsNullOrEmpty(taskListSearch.Name))
@@ -61,8 +62,23 @@ namespace TodoList.Api.Repositories
                 query = query.Where(x => x.Priority == taskListSearch.Priority.Value);
             }
 
+            var count = await query.CountAsync();
+            var tasks = await query.OrderByDescending(x => x.CreatedDate)
+                                  .Skip((taskListSearch.PageNumber - 1) * taskListSearch.PageSize)
+                                  .Take(taskListSearch.PageSize)
+                                  .Select(x => new TaskDto
+                                  {
+                                      Id = x.Id,
+                                      AssigneeName = x.Assignee.FirstName + ' ' + x.Assignee.LastName,
+                                      AssigneeId = x.Id,
+                                      CreatedDate = x.CreatedDate,
+                                      Name = x.Name,
+                                      Priority = x.Priority,
+                                      Status = x.Status
+                                  })
+                                  .ToListAsync();
 
-            return _mapper.Map<IEnumerable<TaskDto>>(await query.OrderByDescending(x => x.CreatedDate).ToListAsync());
+            return new PagedList<TaskDto>(tasks, count, taskListSearch.PageNumber, taskListSearch.PageSize);
         }
 
         public async Task<TaskDetailsDto> UpdateTask(TaskUpdateDto taskDto)

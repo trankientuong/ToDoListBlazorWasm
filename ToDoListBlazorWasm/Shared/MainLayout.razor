@@ -2,6 +2,7 @@
 
 
 @using Blazored.Toast.Configuration
+@using Microsoft.AspNetCore.Components.Authorization
 
 <BlazoredToasts Position="ToastPosition.BottomRight"
                 Timeout="5"
@@ -16,10 +17,19 @@
     <div class="sidebar">
         <NavMenu />
     </div>
-
+    
     <main>
         <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            <AuthorizeView>
+                <Authorized>
+                    Hello, @context.User.Identity.Name
+                    <a href="/Logout">Logout</a>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="/Login">Login</a>
+                </NotAuthorized>
+            </AuthorizeView>
+            
         </div>
 
         <article class="content px-4">

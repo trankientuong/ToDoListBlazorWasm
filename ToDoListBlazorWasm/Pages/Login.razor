@@ -1,0 +1,46 @@
+﻿@page "/Login"
+@using ToDoListBlazorWasm.Services
+@using TodoList.Models
+@inject IAuthService authService
+@inject NavigationManager navigationManager
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Login</h5>
+        <EditForm Model="LoginModel" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator/>
+            <ValidationSummary></ValidationSummary>
+            <div class="form-group">
+                <label for="Username">Username</label>
+                <InputText id="Username" class="form-control" @bind-Value="LoginModel.Username"></InputText>
+                <ValidationMessage For="() => LoginModel.Username"></ValidationMessage>
+            </div>
+            <div class="form-group">
+                <label for="Password">Password</label>
+                <InputText id="Password" type="password" class="form-control" @bind-Value="LoginModel.Password"></InputText>
+                <ValidationMessage For="() => LoginModel.Password"></ValidationMessage>
+            </div>
+            <button type="submit">Login</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private bool ShowErrors;
+    private string Error = "";
+    private LoginModel LoginModel = new LoginModel();
+
+    private async Task HandleLogin()
+    {
+        var result = await authService.Login(LoginModel);
+        if (result.Successful)
+        {
+            navigationManager.NavigateTo("/taskList");
+        }
+        else
+        {
+            ShowErrors = true;
+            Error = result.Error;
+        }
+    }
+}

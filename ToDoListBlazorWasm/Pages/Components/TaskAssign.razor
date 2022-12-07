@@ -83,15 +83,7 @@
     public async Task HandleAssignSubmit()
     {
         var result = await TaskApiClient.AssignTask(TaskId, Model);
-        if (result)
-        {
-            ShowDialog = false;
-            await CloseEventCallback.InvokeAsync(true);
-        }
-        else
-        {
-            ToastService.ShowError("Assign task failed", "Error");
-        }
-
+        ShowDialog = false;
+        await CloseEventCallback.InvokeAsync(result);     
     }
 }

@@ -1,11 +1,12 @@
 ﻿using TodoList.Models;
 using TodoList.Models.Dtos;
+using TodoList.Models.SeedWork;
 
 namespace ToDoListBlazorWasm.Services
 {
     public interface ITaskApiClient
     {
-        Task<List<TaskDto>> GetTasks(TaskListSearch taskListSearch);
+        Task<PagedList<TaskDto>> GetTasks(TaskListSearch taskListSearch);
         Task<TaskDetailsDto> GetTaskDetails(string id);
 
         Task<bool> CreateTask(TaskCreateDto taskCreateDto);
