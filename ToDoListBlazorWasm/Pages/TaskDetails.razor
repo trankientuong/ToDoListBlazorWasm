@@ -1,0 +1,51 @@
+﻿@page "/taskDetails/{TaskId}"
+@using ToDoListBlazorWasm.Services
+@using TodoList.Models.Dtos
+@inject HttpClient http
+@inject ITaskApiClient TaskApiClient
+
+
+@if (TaskId == null)
+{
+    <LoadingIndicator></LoadingIndicator>
+}
+else
+{
+    <h3>TaskDetails @taskDetails.Name</h3>
+    <table class="table">
+        <tr>
+            <td>Name</td>
+            <td>@taskDetails.Name</td>
+        </tr>
+        <tr>
+            <td>Assignee</td>
+            <td>@taskDetails.AssigneeName</td>
+        </tr>
+        <tr>
+            <td>Created Date</td>
+            <td>@taskDetails.CreatedDate</td>
+        </tr>
+        <tr>
+            <td>Priority</td>
+            <td><PriorityLabel Priority="@taskDetails.Priority"></PriorityLabel></td>
+        </tr>
+        <tr>
+            <td>Status</td>
+            <td><StatusLabel Status="@taskDetails.Status"></StatusLabel></td>
+        </tr>
+    </table>
+}
+
+
+
+@code {
+    [Parameter]
+    public string TaskId { get; set; }
+
+    private TaskDetailsDto taskDetails { get; set; } = new TaskDetailsDto();
+
+    protected override async Task OnInitializedAsync()
+    {
+        taskDetails = await TaskApiClient.GetTaskDetails(TaskId);
+    }
+}

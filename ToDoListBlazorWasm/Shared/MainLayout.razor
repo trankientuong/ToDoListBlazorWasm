@@ -1,5 +1,17 @@
 ﻿@inherits LayoutComponentBase
 
+
+@using Blazored.Toast.Configuration
+
+<BlazoredToasts Position="ToastPosition.BottomRight"
+                Timeout="5"
+                IconType="IconType.FontAwesome"
+                SuccessClass="success-toast-override"
+                SuccessIcon="fa fa-thumbs-up"
+                InfoIcon="fa fa-info"
+                WarningIcon="fa fa-exclaimation"
+                ErrorIcon="fa fa-bug" />
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
