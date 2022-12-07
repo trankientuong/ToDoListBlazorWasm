@@ -1,0 +1,51 @@
+﻿@page "/taskList"
+@using ToDoListBlazorWasm.Pages.Components
+@inject IConfiguration Configuration
+
+<h3>Todo List</h3>
+
+@if (Tasks == null)
+{
+    <LoadingIndicator></LoadingIndicator>
+}
+else
+{
+    <div class="row">
+        <TaskSearch OnSearch="SearchTask"></TaskSearch>
+    </div>
+    <div class="row mt-4">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Priority</th>
+                    <th>Assignee</th>
+                    <th>Created Date</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var task in Tasks)
+                {
+                    <tr>
+                        <td>@task.Name</td>
+                        <td><PriorityLabel Priority="@task.Priority"></PriorityLabel></td>
+                        <td><a style="cursor:pointer" @onclick="() => OpenAssignPopup(task.Id)">@task.AssigneeName</a></td>
+                        <td>@task.CreatedDate.ToString(Configuration["DateTimeFormat"])</td>
+                        <td><StatusLabel Status="@task.Status"></StatusLabel></td>
+                        <td>
+                            <a href="/taskEdit/@task.Id"><i class="fa-solid fa-pen-to-square"></i></a> |
+                            <a href="/taskDetails/@task.Id"><i class="fa fa-info-circle"></i></a>
+                            <a href="" @onclick:preventDefault @onclick="() => OnDeleteTask(task.Id)"><i class="fa-solid fa-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <Confirmation ConfirmationChanged="OnConfirmDeleteTask" @ref="DeleteConfirmation"></Confirmation>
+    <TaskAssign CloseEventCallback="AssignTaskSucces" @ref="TaskAssignDialog"></TaskAssign>
+}
+
+

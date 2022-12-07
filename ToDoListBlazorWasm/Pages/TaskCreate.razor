@@ -1,0 +1,82 @@
+﻿@page "/taskCreate"
+@using ToDoListBlazorWasm.Services
+@using TodoList.Models.Dtos
+@using TodoList.Models.Enums
+@inject NavigationManager NavigationManager
+@inject IToastService toastService
+
+<h3>Create New Task</h3>
+<EditForm Model="TaskCreateDto" OnValidSubmit="@SubmitTask">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <Label For="Name">Task Name</Label>     
+        <InputText id="Name" class="form-control" @bind-Value="@TaskCreateDto.Name"></InputText>
+        <ValidationMessage For="() => TaskCreateDto.Name"></ValidationMessage>
+        <div id="nameHelp" class="form-text">Please enter task title here.</div>
+    </div>
+    <div class="mb-3">
+        <Label For="Assignee">Assignee</Label>     
+        <InputSelect id="Assignee" class="form-control" @bind-Value="@TaskCreateDto.AssigneeId">
+            <option>Select an assignee</option>
+            @foreach (var assignee in Assignees)
+            {
+                <option value="@assignee.Id">@assignee.FullName</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="() => TaskCreateDto.AssigneeId"></ValidationMessage>
+        <div id="assigneeHelp" class="form-text">Please select task assignee here.</div>
+    </div>
+    <div class="mb-3">
+        <Label For="Priority">Priority</Label>      
+        <InputSelect id="Priority" class="form-control" @bind-Value="@TaskCreateDto.Priority">
+            <option>Select a priority</option>
+            @foreach (var item in Enum.GetNames(typeof(Priority)))
+            {
+                <option value="@item">@item</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="() => TaskCreateDto.Priority"></ValidationMessage>
+        <div id="priorityHelp" class="form-text">Please select task priority here.</div>
+    </div>
+    <div class="mb-3">
+        <Label For="Status">Status</Label>     
+        <InputSelect id="Status" class="form-control" @bind-Value="@TaskCreateDto.Status">
+            <option>Select a status</option>
+            @foreach (var item in Enum.GetNames(typeof(Status)))
+            {
+                <option value="@item">@item</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="() => TaskCreateDto.Status"></ValidationMessage>
+        <div id="statusHelp" class="form-text">Please select task status here.</div>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+@code {
+    private TaskCreateDto TaskCreateDto = new TaskCreateDto();
+    private List<AssigneeDto> Assignees = new List<AssigneeDto>();
+
+    [Inject] private IUserApiClient UserApiClient { get; set; }
+    [Inject] private ITaskApiClient TaskApiClient { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Assignees = await UserApiClient.GetAssignees();
+    }
+
+    private async Task SubmitTask(EditContext context)
+    {
+        var result = await TaskApiClient.CreateTask(TaskCreateDto);
+        if (result)
+        {
+            toastService.ShowSuccess($"{TaskCreateDto.Name} has been created successfully.","Success");
+            NavigationManager.NavigateTo("/taskList");
+        }
+        else
+        {
+            toastService.ShowError("An error occured in progress.","Error");
+        }
+
+    }
+}
